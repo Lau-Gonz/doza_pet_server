@@ -1,25 +1,36 @@
-# Importar las funciones y clases necesarias de los diferentes archivos
-from cronjob import send_info_to_arduino
-from dataset import get_user_info, update_local_file
-from realtime import on_change
+import os
+import csv
+from dotenv import load_dotenv
+from realtime.connection import Socket
+from local_data_function import insert_data, update_data, delete_data
+import json
 
-# Configurar el cronjob
-scheduler = BlockingScheduler()
-scheduler.add_job(send_info_to_arduino, 'interval', minutes=5)
-scheduler.start()
+load_dotenv()
 
-# Obtener la información del usuario y actualizar el archivo local
-user_id = 'el_id_del_usuario'
-info = get_user_info(user_id)
-update_local_file(info)
+ID = os.environ.get("SUPABASE_ID", "")
+KEY = os.environ.get("SUPABASE_KEY", "")
+URL = f"wss://{ID}.supabase.co/realtime/v1/websocket?apikey={KEY}&vsn=1.0.0"
+ID_DISPOSITVO = os.environ.get("DISPOSITIVO_ID", "")
 
-# Escuchar los cambios en la base de datos
-realtime = client.realtime()
-realtime.on('usuarios:info', lambda payload: on_change(payload, user_id))
 
-# Enviar mensajes cortos al usuario
-print('El servidor está en línea')
+def callback1(payload):
+    # Cuando la tabla funcione, es necesario agregar una condición para que solo busque el id del dispositivo
+    print(f"Cambio en la tabla ", payload.get("table"), " : ", payload.get("type"), payload)
+    if payload.get("type") == "INSERT":
+        insert_data(payload)
+    elif payload.get("type") == "UPDATE":
+        update_data(payload)
+    elif payload.get("type") == "DELETE":
+        delete_data(payload)
 
-while True:
-    send_info_to_arduino()
-    time.sleep(300)  # Esperar 5 minutos antes de enviar la siguiente información
+
+def main():
+    s = Socket(URL)
+    s.connect()
+    channel_1 = s.set_channel("realtime:public:porcion")
+    channel_1.join().on("*", callback1)
+    s.listen()
+
+
+if __name__ == "__main__":
+    main()

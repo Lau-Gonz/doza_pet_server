@@ -15,6 +15,7 @@ ID_DISPOSITVO = os.environ.get("DISPOSITIVO_ID", "")
 
 def callback1(payload):
     # Cuando la tabla funcione, es necesario agregar una condición para que solo busque el id del dispositivo
+    # if payload.get("id_dispositivo") == ID_DISPOSITIVO:
     print(f"Cambio en la tabla ", payload.get("table"), " : ", payload.get("type"), payload)
     if payload.get("type") == "INSERT":
         insert_data(payload)

@@ -15,7 +15,6 @@ while True:
             lector_csv = csv.reader(archivo)
             lineas_csv = list(lector_csv)
             archivo.seek(0)  # Vuelve al inicio del archivo
-
             for linea in lineas_csv:
                 linea[3] = "1"  # Actualiza la columna "dar_comer" a 0
                 archivo.write(','.join(linea) + '\n')
@@ -41,7 +40,6 @@ while True:
                 print(f"Comida a dispensar: {comida_a_dispensar}")
                 print(f"Tiempo de dispensación: {tiempo_dispensacion}")
                 print(f"Se debe dar de comer: {bool(alimentado)}")
-
                 lineas_csv[i][3] = "0"
 
     # Espera 1 hora antes de verificar nuevamente

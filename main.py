@@ -10,20 +10,22 @@ load_dotenv()
 ID = os.environ.get("SUPABASE_ID", "")
 KEY = os.environ.get("SUPABASE_KEY", "")
 URL = f"wss://{ID}.supabase.co/realtime/v1/websocket?apikey={KEY}&vsn=1.0.0"
-ID_DISPOSITVO = os.environ.get("DISPOSITIVO_ID", "")
+DISPOSITIVO_ID = os.environ.get("DISPOSITIVO_ID")
 
 
 def callback1(payload):
-    # Cuando la tabla funcione, es necesario agregar una condición para que solo busque el id del dispositivo
-    # if payload.get("id_dispositivo") == ID_DISPOSITIVO:
-    print(f"Cambio en la tabla ", payload.get("table"), " : ", payload.get("type"), payload)
     if payload.get("type") == "INSERT":
-        insert_data(payload)
-    elif payload.get("type") == "UPDATE":
-        update_data(payload)
-    elif payload.get("type") == "DELETE":
-        delete_data(payload)
-
+        if payload['record'].get("id_dispositivo") == int(DISPOSITIVO_ID):
+            print("New Payload: \n",payload, "\n")
+            insert_data(payload)
+    if payload.get("type") == "UPDATE":
+        if payload['record'].get("id_dispositivo") == int(DISPOSITIVO_ID):
+            print("New Payload: \n",payload, "\n")
+            update_data(payload)
+    if payload.get("type") == "DELETE":
+        print("New Payload: \n",payload, "\n")
+        if payload['old_record'].get("id_dispositivo") == int(DISPOSITIVO_ID):
+            delete_data(payload)
 
 def main():
     s = Socket(URL)

@@ -38,6 +38,5 @@ while True:
     with open(archivo_csv, 'w', newline='') as archivo_modificado:
         escritor_csv = csv.writer(archivo_modificado)
         escritor_csv.writerows(lineas_modificadas)
-
     time.sleep(60)
     print("Ya paso un minuto xd ", hora_actual.tm_hour, ":", hora_actual.tm_min, " , ", minutos_actuales )

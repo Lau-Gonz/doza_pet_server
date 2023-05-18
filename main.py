@@ -23,9 +23,9 @@ def callback1(payload):
             print("New Payload: \n",payload, "\n")
             update_data(payload)
     if payload.get("type") == "DELETE":
-        print("New Payload: \n",payload, "\n")
         if payload['old_record'].get("id_dispositivo") == int(DISPOSITIVO_ID):
             delete_data(payload)
+            print("New Payload: \n",payload, "\n")
 
 def main():
     s = Socket(URL)
